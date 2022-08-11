@@ -1,5 +1,3 @@
-const EncryptRsa = require('encrypt-rsa').default;
-
 const Rsa = {
     encrypt(message, pk) {
         const NodeRSA = require('node-rsa');
