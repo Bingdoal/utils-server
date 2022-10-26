@@ -9,7 +9,9 @@ const Rsa = {
         }
         pk = pk.trim();
 
-        const key = new NodeRSA(pk, "public");
+        const key = new NodeRSA(pk, "public",{
+            encryptionScheme: "pkcs1"
+        });
         const encrypted = key.encrypt(message, 'base64');
         return encrypted
     }
