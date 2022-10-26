@@ -50,7 +50,7 @@ app.post('/rsaPubEncrypt', async (req, res) => {
         })
         return
     }
-    var result = rsa.encrypt(body.encStr, body.publicKey)
+    var result = rsa.encrypt(JSON.stringify(body.encStr), body.publicKey)
     console.log(result);
     res.status(201).json({
         "data": result

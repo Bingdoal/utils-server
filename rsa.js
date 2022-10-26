@@ -1,17 +1,18 @@
 const Rsa = {
     encrypt(message, pk) {
         const NodeRSA = require('node-rsa');
-        if (pk.startsWith("-----BEGIN PUBLIC KEY-----")){
-            pk = pk.replace("-----BEGIN PUBLIC KEY-----","")
+        if (pk.startsWith("-----BEGIN PUBLIC KEY-----")) {
+            pk = pk.replace("-----BEGIN PUBLIC KEY-----", "")
         }
         if (pk.endsWith("-----END PUBLIC KEY-----")) {
             pk = pk.replace("-----END PUBLIC KEY-----", "")
         }
         pk = pk.trim();
 
-        const key = new NodeRSA(pk, "public",{
+        const key = new NodeRSA(pk, "public", {
             encryptionScheme: "pkcs1"
         });
+        console.log("rsa encrypt message: ", message);
         const encrypted = key.encrypt(message, 'base64');
         return encrypted
     }
