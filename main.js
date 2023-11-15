@@ -2,6 +2,7 @@ const express = require('express');
 const rsa = require("./rsa")
 const ed25519 = require("./ed25519")
 const base64 = require("./base64")
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000
@@ -11,10 +12,6 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use((req, res, next) => {
     console.log(req.method + ": " + req.path);
-    if (req.body !== undefined &&
-        req.body != null) {
-
-    }
     console.log("input: ");
     console.log(req.body);
     next()
@@ -54,7 +51,27 @@ app.post('/rsaPubEncrypt', async (req, res) => {
     if (typeof body.encStr === 'object') {
         msg = JSON.stringify(body.encStr)
     }
-    var result = rsa.encrypt(msg, body.publicKey)
+    var result = rsa.encryptByPublic(msg, body.publicKey)
+    console.log(result);
+    res.status(201).json({
+        "data": result
+    })
+});
+
+app.post('/rsaPriSign', async (req, res) => {
+    let body = req.body
+    if (body.privateKey === undefined ||
+        body.message === undefined) {
+        res.status(400).json({
+            "message": "Request body [privateKey] or [message] is missing"
+        })
+        return
+    }
+    let msg = body.message
+    if (typeof body.message === 'object') {
+        msg = JSON.stringify(body.message)
+    }
+    var result = rsa.signByPrivateKey(msg, body.privateKey, body.alg)
     console.log(result);
     res.status(201).json({
         "data": result
