@@ -11,8 +11,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use((req, res, next) => {
-    console.log(req.method + ": " + req.path);
-    console.log("input: ");
+    console.log(new Date().toISOString() + "| " + req.method + ": " + req.path);
+    console.log(new Date().toISOString() + "| input: ");
     console.log(req.body);
     next()
 })
@@ -77,6 +77,11 @@ app.post('/rsaPriSign', async (req, res) => {
         "data": result
     })
 });
+
+// 請搭配 ngrok 服用
+app.post('/callbackTest', (req, res)=>{
+    
+})
 
 app.listen(3000, () => {
     console.log(`Utils server listening on port ${port}`)
