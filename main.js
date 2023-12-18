@@ -2,16 +2,20 @@ const express = require('express');
 const rsa = require("./rsa")
 const ed25519 = require("./ed25519")
 const base64 = require("./base64")
-const bodyParser = require('body-parser');
+const path = require('path')
 
 const app = express();
 const port = 3000
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use('/static', express.static(path.join(__dirname, 'static')))
+app.set("view options", {layout: false});
+app.engine('html', require('ejs').renderFile);
+
 
 app.use((req, res, next) => {
-    console.log(new Date().toISOString() + "| " + req.method + ": " + req.path);
+    console.log(new Date().toISOString() + "| " + req.method + ": " + req.url);
     console.log(new Date().toISOString() + "| input: ");
     console.log(req.body);
     next()
@@ -80,7 +84,15 @@ app.post('/rsaPriSign', async (req, res) => {
 
 // 請搭配 ngrok 服用
 app.post('/callbackTest', (req, res)=>{
-    
+    res.status(200).json({
+        "status": "callback success"
+    })
+})
+
+app.get('/redirectTest', (req, res)=>{
+    res.render("redirect.html",{
+        data: req.query
+    })
 })
 
 app.listen(3000, () => {
