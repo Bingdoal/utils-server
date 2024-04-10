@@ -10,14 +10,16 @@ const port = 3000
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/static', express.static(path.join(__dirname, 'static')))
-app.set("view options", {layout: false});
+app.set("view options", { layout: false });
 app.engine('html', require('ejs').renderFile);
 
 
 app.use((req, res, next) => {
     console.log(new Date().toISOString() + "| " + req.method + ": " + req.url);
-    console.log(new Date().toISOString() + "| input: ");
-    console.log(req.body);
+    console.log(new Date().toISOString() + "| header: ");
+    console.log(JSON.stringify(req.headers,null,4));
+    console.log("| body: ");
+    console.log(JSON.stringify(req.body,null,4));
     next()
 })
 
@@ -83,18 +85,22 @@ app.post('/rsaPriSign', async (req, res) => {
 });
 
 // 請搭配 ngrok 服用
-app.post('/callbackTest', (req, res)=>{
+app.post('/callbackTest', (req, res) => {
     res.status(200).json({
         "status": "callback success"
     })
 })
 
-app.get('/redirectTest', (req, res)=>{
-    res.render("redirect.html",{
-        data: req.query
+app.get('/redirectTest', (req, res) => {
+    res.render("redirect.html", {
+        data: JSON.stringify(req.query)
     })
 })
 
 app.listen(3000, () => {
     console.log(`Utils server listening on port ${port}`)
 })
+
+function wait(ms) {
+    return new Promise(resolve => setTimeout(() => resolve(), ms));
+};
