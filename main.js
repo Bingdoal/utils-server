@@ -16,17 +16,17 @@ app.set("view options", { layout: false });
 app.engine('html', require('ejs').renderFile);
 
 
-app.use(bodyParser.text({type: '*/*'}),(req, res, next) => {
+app.use(bodyParser.text({ type: '*/*' }), (req, res, next) => {
     console.log(new Date().toISOString() + "| " + req.method + ": " + req.url);
     console.log(new Date().toISOString() + "| header: ");
-    console.log(JSON.stringify(req.headers,null,4));
+    console.log(JSON.stringify(req.headers, null, 4));
     console.log("| body: ");
     console.log(req.body);
     next()
 })
 
 app.post('/ed25519', async (req, res) => {
-    body = req.body;
+    body = JSON.parse(req.body);
     if (body.privateKey === undefined ||
         body.message === undefined) {
         res.status(400).json({
@@ -36,7 +36,7 @@ app.post('/ed25519', async (req, res) => {
     }
 
     ed25519.sign(body.message, body.privateKey).then((sign) => {
-        res.status(201).json({
+        res.status(200).json({
             "signature": base64.encode(sign)
         })
     }).catch((err) => {
@@ -47,7 +47,7 @@ app.post('/ed25519', async (req, res) => {
 });
 
 app.post('/rsaPubEncrypt', async (req, res) => {
-    let body = req.body
+    let body = JSON.parse(req.body);
     if (body.publicKey === undefined ||
         body.encStr === undefined) {
         res.status(400).json({
@@ -61,13 +61,33 @@ app.post('/rsaPubEncrypt', async (req, res) => {
     }
     var result = rsa.encryptByPublic(msg, body.publicKey)
     console.log(result);
-    res.status(201).json({
+    res.status(200).json({
+        "data": result
+    })
+});
+
+app.post('/rsaPriDecrypt', async (req, res) => {
+    let body = JSON.parse(req.body);
+    if (body.privateKey === undefined ||
+        body.encStr === undefined) {
+        res.status(400).json({
+            "message": "Request body [privateKey] or [encStr] is missing"
+        })
+        return
+    }
+    let msg = body.encStr
+    if (typeof body.encStr === 'object') {
+        msg = JSON.stringify(body.encStr)
+    }
+    var result = rsa.decryptByPrivate(msg, body.privateKey)
+    console.log(result);
+    res.status(200).json({
         "data": result
     })
 });
 
 app.post('/rsaPriSign', async (req, res) => {
-    let body = req.body
+    let body = JSON.parse(req.body);
     if (body.privateKey === undefined ||
         body.message === undefined) {
         res.status(400).json({
@@ -81,10 +101,32 @@ app.post('/rsaPriSign', async (req, res) => {
     }
     var result = rsa.signByPrivateKey(msg, body.privateKey, body.alg)
     console.log(result);
-    res.status(201).json({
+    res.status(200).json({
         "data": result
     })
 });
+
+app.post('/rsaSignWithMD5', async (req, res) => {
+    let body = JSON.parse(req.body);
+    if (body.appKey === undefined ||
+        body.privateKeyBase64 === undefined ||
+        body.message === undefined) {
+        res.status(400).json({
+            "message": "Request body [privateKeyBase64], [appKey] or [message] is missing"
+        })
+        return
+    }
+    let msg = body.message
+    if (typeof body.message === 'object') {
+        msg = JSON.stringify(body.message)
+    }
+    var result = rsa.signWithMD5(msg, body.appKey, body.privateKeyBase64)
+    console.log(result);
+    res.status(200).json({
+        "data": result
+    })
+});
+
 
 // 請搭配 ngrok 服用
 app.post('/callbackTest', (req, res) => {
@@ -93,7 +135,7 @@ app.post('/callbackTest', (req, res) => {
     })
 })
 app.put('/callbackTest', (req, res) => {
-    
+
     res.status(200).json({
         "status": "callback success"
     })
