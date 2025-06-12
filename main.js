@@ -86,6 +86,21 @@ app.post('/rsaPriDecrypt', async (req, res) => {
     })
 });
 
+app.post('/genPriKeyByPem', async (req, res) => {
+    let body = JSON.parse(req.body);
+    if (body.pem === undefined) {
+        res.status(400).json({
+            "message": "Request body [pem] is missing"
+        })
+        return
+    }
+    var result = rsa.genPriKeyFromPem(body.pem)
+    console.log(result);
+    res.status(200).json({
+        "data": result
+    })
+})
+
 app.post('/rsaPriSign', async (req, res) => {
     let body = JSON.parse(req.body);
     if (body.privateKey === undefined ||

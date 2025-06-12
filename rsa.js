@@ -33,7 +33,7 @@ const Rsa = {
         const key = new NodeRSA(publicKey, "public", {
             encryptionScheme: "pkcs1"
         });
-        
+
         const encrypted = key.encrypt(message, 'base64');
         return encrypted
     },
@@ -70,6 +70,18 @@ const Rsa = {
 
         const signature = signer.sign(privateKeyPem);
         return signature.toString('base64');
+    },
+    genPriKeyFromPem(pem, type) {
+        let pk = crypto.createPrivateKey({
+            key: pem, // PEM 字串
+            format: 'pem',
+            type: type == undefined ? 'pkcs1' : type, // 或 'pkcs1'，取決於你的 key 類型
+        });
+
+        return pk.export({
+            format: 'pem',
+            type: 'pkcs8',
+        })
     }
 }
 
