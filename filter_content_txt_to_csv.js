@@ -3,9 +3,9 @@ const fs = require('fs');
 // ======= 輸入參數 =======
 const inputFile = process.argv[2] || "/Users/brucelin/Downloads/log (10).txt";  // 輸入檔案
 const outputFile = process.argv[3] || "output.csv"; // 輸出檔案
-const filterString = "Time elapsed:";  // 根據關鍵字先篩選出需要的行內容
-const regexPattern = /.*?\[(.+?)\] Tests run: (.+?), Failures: (.+?), Errors: (.+?), Skipped: (.+?), Time elapsed: (.+?)s .+ in (.+)/;
-const csvHeader = "Log level, Tests run, Failures, Errors, Skipped, Time elapsed(s), Run Class";
+const filterString = process.argv[4] || "Time elapsed:";  // 根據關鍵字先篩選出需要的行內容
+const regexPattern = process.argv[5] || /.*?\[(.+?)\] Tests run: (.+?), Failures: (.+?), Errors: (.+?), Skipped: (.+?), Time elapsed: (.+?)s .+ in (.+)/;
+const csvHeader = process.argv[6] || "Log level, Tests run, Failures, Errors, Skipped, Time elapsed(s), Run Class";
 // ========================
 
 // 讀取檔案
