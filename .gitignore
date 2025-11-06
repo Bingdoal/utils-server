@@ -2,3 +2,6 @@ package-lock.json
 node_modules/
 dist/
 static/
+*.csv
+*.txt
+!file_list.txt
